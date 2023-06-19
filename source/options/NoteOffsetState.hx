@@ -200,6 +200,11 @@ class NoteOffsetState extends MusicBeatState
 
 		FlxG.camera.zoom = 0.7;
 
+		#if android
+		addVirtualPad(LEFT_FULL, A_B_C);
+		addPadCamera();
+		#end
+
 		super.create();
 	}
 
@@ -325,7 +330,7 @@ class NoteOffsetState extends MusicBeatState
 				}
 			}
 
-			if(controls.RESET)
+			if(controls.RESET #if android || virtualPad.buttonC.justPressed #end)
 			{
 				for (i in 0...ClientPrefs.comboOffset.length)
 				{
@@ -363,7 +368,7 @@ class NoteOffsetState extends MusicBeatState
 				updateNoteDelay();
 			}
 
-			if(controls.RESET)
+			if(controls.RESET #if android || virtualPad.buttonC.justPressed #end)
 			{
 				holdTime = 0;
 				barPercent = 0;
