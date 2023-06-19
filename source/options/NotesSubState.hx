@@ -65,6 +65,12 @@ class NotesSubState extends MusicBeatSubstate
 		grpNumbers = new FlxTypedGroup<Alphabet>();
 		add(grpNumbers);
 
+		#if android
+		var resetText:FlxText = new FlxText(12, FlxG.height - 40, "Press C to reset selected note.", 80);
+		#else
+		var resetText:FlxText = new FlxText(12, FlxG.height - 40, "Press RESET to reset selected note.", 80);
+		#end
+
 		for (i in 0...ClientPrefs.arrowHSV.length) {
 			var yPos:Float = (165 * i) + 35;
 			for (j in 0...3) {
@@ -94,6 +100,10 @@ class NotesSubState extends MusicBeatSubstate
 		add(hsbText);
 
 		changeSelection();
+
+		#if android
+		addVirtualPad(LEFT_FULL, A_B_C);
+		#end
 	}
 
 	var changingNote:Bool = false;
@@ -106,7 +116,7 @@ class NotesSubState extends MusicBeatSubstate
 				} else if(controls.UI_RIGHT_P) {
 					updateValue(1);
 					FlxG.sound.play(Paths.sound('scrollMenu'));
-				} else if(controls.RESET) {
+				} else if(controls.RESET #if android || virtualPad.buttonC.justPressed #end) {
 					resetValue(curSelected, typeSelected);
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 				}
@@ -147,7 +157,7 @@ class NotesSubState extends MusicBeatSubstate
 				changeType(1);
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 			}
-			if(controls.RESET) {
+			if(controls.RESET #if android || virtualPad.buttonC.justPressed #end) {
 				for (i in 0...3) {
 					resetValue(curSelected, i);
 				}
@@ -176,9 +186,14 @@ class NotesSubState extends MusicBeatSubstate
 			}
 		}
 
-		if (controls.BACK || (changingNote && controls.ACCEPT)) {
+		if (controls.BACK || (changingNote && controls.ACCEPT)) {			
 			if(!changingNote) {
+			        #if android
+				FlxTransitionableState.skipNextTransOut = true;
+				FlxG.resetState();
+				#else
 				close();
+		                #end
 			} else {
 				changeSelection();
 			}
